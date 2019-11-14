@@ -1,4 +1,4 @@
-#깜신 29~32탄. 회귀분석. 10:00분.
+#깜신 29~33탄. 회귀분석.
 #빅데이터, 인공지능(머신러닝, 딥러닝)에서도 씀.
 #단순선형회귀분석:그동안 해왔던거. y=ax+b.
 #다중회귀분석.y=a1x1+a2x2+a3x3+.....+b.
@@ -56,3 +56,14 @@ sqrt(vif(fit))#<2여야 다중공선성(Multicolinearity) 문제로부터 자유
 #:영향관측치(influential observation)->Cook's distance or D statistics.=4/n(샘플수)-k(<a1x1++a2x2+b>는 2개.)-1>0.1크게는 1.면 재확인.
 influencePlot(fit, id.method = "identify")#y축.표준잔차.x축.Hat-Values.원지름은 Cook's D.
 
+#회귀모형의 교정.33탄.car package.
+#회귀분석은 정규성,독립성,선형성,등분산성.
+states
+#정규성.교정.
+powerTransform(states$Murder)
+summary(powerTransform(states$Murder))
+#선형성.교정.
+boxTidwell(Murder~ Population+Illiteracy, data=states)
+#등분산성.교정.
+ncvTest(fit)
+spreadLevelPlot(fit)
