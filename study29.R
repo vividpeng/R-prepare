@@ -1,16 +1,10 @@
-#깜신 29~33탄. 회귀분석.
+#깜신 29~34탄. 회귀분석.중 (Ordinary linear model)
 #빅데이터, 인공지능(머신러닝, 딥러닝)에서도 씀.
 #단순선형회귀분석:그동안 해왔던거. y=ax+b.
 #다중회귀분석.y=a1x1+a2x2+a3x3+.....+b.
 #적정모형의 선택:많은 인자를 넣는 다고 잘 나오지 않음.영향이 많은 걸 잘 골라야.
 #과적합 상태가되어 오히려 구려짐.
 
-#1>Backward regression.:다 넣고 P-value 높은 것부터 빼보기.
-#2>Forward regression.:하나씩 p-value 낮은 것부터 넣어보기.
-#3>all subset regression.
-#4>cross validation.
-#...
-#AIC(Akaike Information Criteria)
 install.packages("car",dependencies = T)
 
 #단순선형회귀분석.
@@ -67,3 +61,32 @@ boxTidwell(Murder~ Population+Illiteracy, data=states)
 #등분산성.교정.
 ncvTest(fit)
 spreadLevelPlot(fit)
+
+#예측 변수 선택. 34탄.
+fit1<-lm(Murder~., data=states)
+summary(fit1)
+fit2<-lm(Murder~Population+Illiteracy, data=states)
+summary(fit2)
+
+#AIC(Akaike Information Criteria)
+AIC(fit1,fit2) #AIC 작을 수록 좋은 것.
+
+#1.Backward stepwise regression.
+#:Full model.P-value 높은 것(의미 낮은 것)부터 빼보기.
+#:(AIC가 낮아 지다가 높아지는 점 찾기.)
+full.model<-lm(Murder~., data=states)
+Reduced.model<- step(full.model, direction="backward")
+summary(Reduced.model)
+#2.Forward stepwise regression.
+#:minimum model.하나씩 p-value 낮은 것부터 넣어보기.
+min.model<-lm(Murder~1,data=states)
+fwd.model<-step(min.model, direction = "forward",
+                scope = (Murder~Population+Illiteracy+Income+Frost),
+                trace=0)
+summary(fwd.model)
+#3.all subset regression
+#:전체의 경우 AIC를 다 확인하여 찾는 것.
+library(leaps)
+leaps<-regsubsets(Murder~Population+Illiteracy+Income+Frost, 
+                  data=states, nbest=4)
+plot(leaps, scale="adjr2")#색칠된 부분의 변수가 포함된 AIC값 보여줌.
